@@ -1,7 +1,10 @@
 import numpy as np
 from helpers.compute_eta import compute_eta
 from helpers.compute_p_prob import compute_p_prob
-from helpers.compute_w_c import compute_w_c
+from helpers.compute_W_c import compute_W_c
+from helpers.compute_e import compute_e
+from helpers.compute_X_tilde import compute_X_tilde
+from helpers.compute_z import compute_z
 
 
 def initialize_beta(n, p):
@@ -21,6 +24,7 @@ def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
     N, p = X.shape
     N, n_1 = Y.shape
     n = n_1 + 1
+    X_tilde = compute_X_tilde(X, n)
 
     # beta: parameters, of shape (n - 1, p).
     # The i th row consists of the coefficients corresponding to the i th class
@@ -30,6 +34,11 @@ def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
     beta_curr_array = beta_curr.copy()
     beta_curr_array.flatten()
 
+    while True:
+        p_prob = compute_p_prob(X, beta_curr)
+        W_c = compute_W_c(p_prob, c)
+        z = compute_z(X_tilde, beta_curr, Y, p_prob)
+
 
 # x = np.array([[1, 1], [1, 2], [1, 3]])
 # beta = np.array([[1, 1], [2, 1]])
@@ -37,4 +46,14 @@ def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
 
 p_prob = np.array([[0.1, 0.5, 0.4], [0.2, 0.4, 0.4], [0.3, 0.1, 0.6]])
 c = np.ones((3, 1))
-compute_w_c(p_prob, c)
+c1 = np.array([[1], [2], [3]])
+# compute_W_c(p_prob, c)
+
+
+Y = np.array([[0.2, 0.3], [0.1, 0.5], [0.5, 0.2]])
+# compute_e(Y, p_prob)
+
+X = np.array([[1, 2, 3], [1, 4, 3], [1, 6, 7]])
+X_tilde = compute_X_tilde(X, 3)
+beta_curr = np.array([[1, 2, 1], [4, 2, 2]])
+# compute_z(X_tilde, beta_curr, Y, p_prob)

@@ -3,7 +3,7 @@ from typing import Any
 from log_font_colors import log_font_colors
 
 
-def compute_w_c(p_prob: np.ndarray, c: np.ndarray) -> np.ndarray:
+def compute_W_c(p_prob: np.ndarray, c: np.ndarray) -> np.ndarray:
     """
     N: number of observations in the sample \n
     n: number of classes in the multinomial distribution \n
