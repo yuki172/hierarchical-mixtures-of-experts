@@ -24,20 +24,24 @@ def compute_z(
     e = compute_e(Y, p_prob)
     W = compute_W_c(p_prob, np.ones((N, 1)))
 
-    print("e")
-    print(e)
+    # print("e")
+    # print(e)
     print("W")
     print(W)
 
     beta_curr_column = beta_curr.flatten()
     beta_curr_column = np.reshape(beta_curr_column, (-1, 1))
-    print("beta_curr_column")
-    print(beta_curr_column)
-    print("X_tilde")
-    print(X_tilde)
+    # print("beta_curr_column")
+    # print(beta_curr_column)
+    # print("X_tilde")
+    # print(X_tilde)
 
     X_beta = np.matmul(X_tilde, beta_curr_column)
-    print("X_beta")
-    print(X_beta)
+    # print("X_beta")
+    # print(X_beta)
 
-    return np.matmul(X_tilde, beta_curr_column) + np.linalg.inv(W) * e
+    # print("w * e")
+    # print(np.linalg.inv(W))
+    # print(np.matmul(np.linalg.inv(W), e).shape)
+
+    return X_beta + np.matmul(np.linalg.inv(W), e)

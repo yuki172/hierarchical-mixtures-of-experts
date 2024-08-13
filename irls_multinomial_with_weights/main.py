@@ -5,10 +5,12 @@ from helpers.compute_W_c import compute_W_c
 from helpers.compute_e import compute_e
 from helpers.compute_X_tilde import compute_X_tilde
 from helpers.compute_z import compute_z
+from scipy.linalg import sqrtm
+from log_font_colors import printColored
 
 
 def initialize_beta(n, p):
-    beta = np.ones((n - 1, p))
+    beta = np.zeros((n - 1, p))
     return beta
 
 
@@ -30,14 +32,24 @@ def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
     # The i th row consists of the coefficients corresponding to the i th class
     beta_curr = initialize_beta(n, p)
 
-    # beta_array: flattened beta, of shape (1, (n - 1) * p))
-    beta_curr_array = beta_curr.copy()
-    beta_curr_array.flatten()
-
-    while True:
+    printColored("beta_curr")
+    print(beta_curr)
+    count = 5
+    while count > 0:
+        count -= 1
         p_prob = compute_p_prob(X, beta_curr)
         W_c = compute_W_c(p_prob, c)
         z = compute_z(X_tilde, beta_curr, Y, p_prob)
+        K_c: np.ndarray = sqrtm(W_c)  # type: ignore
+
+        beta_new = np.linalg.lstsq(np.matmul(K_c, X_tilde), np.matmul(K_c, z))[0]
+
+        beta_new = np.reshape(beta_new, (n - 1, p))
+
+        beta_curr = beta_new
+
+        printColored("beta_new")
+        print(beta_new)
 
 
 # x = np.array([[1, 1], [1, 2], [1, 3]])
@@ -57,3 +69,5 @@ X = np.array([[1, 2, 3], [1, 4, 3], [1, 6, 7]])
 X_tilde = compute_X_tilde(X, 3)
 beta_curr = np.array([[1, 2, 1], [4, 2, 2]])
 # compute_z(X_tilde, beta_curr, Y, p_prob)
+
+irls_multinomial_with_weights(X, Y, c)

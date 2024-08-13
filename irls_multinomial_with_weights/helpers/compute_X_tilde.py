@@ -28,13 +28,13 @@ def compute_X_tilde(X: np.ndarray, n: int):
                 (X_tilde_row_i, get_ij_th_matrix(i, j)), axis=1
             )
         X_tilde_rows[i] = X_tilde_row_i
-        print(i)
-        print(X_tilde_row_i)
+        # print(i)
+        # print(X_tilde_row_i)
 
     X_tilde = X_tilde_rows[0]
     for i in range(1, n - 1):
         X_tilde = np.concatenate((X_tilde, X_tilde_rows[i]), axis=0)
 
-    print(X_tilde)
+    # print(X_tilde)
 
     return X_tilde

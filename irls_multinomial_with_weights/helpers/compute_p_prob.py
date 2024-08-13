@@ -15,6 +15,9 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
 
     eta = compute_eta(X, beta_curr)
 
+    print("eta")
+    print(eta)
+
     N, _n = eta.shape
 
     # (N, n)
@@ -28,4 +31,6 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
     # (N, n)
     p_prob = np.matmul(np.diag(denominator), exp_eta)
 
+    print("p_prob")
+    print(p_prob)
     return p_prob

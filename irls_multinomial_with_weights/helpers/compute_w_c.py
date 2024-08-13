@@ -46,7 +46,7 @@ def compute_W_c(p_prob: np.ndarray, c: np.ndarray) -> np.ndarray:
     for i in range(1, n - 1):
         w_c = np.concatenate((w_c, w_c_dict_rows[i]), axis=0)
 
-    print(f"{log_font_colors.OKGREEN}w_c{log_font_colors.ENDC}")
-    print(w_c)
+    # print(f"{log_font_colors.OKGREEN}w_c{log_font_colors.ENDC}")
+    # print(w_c)
 
     return w_c

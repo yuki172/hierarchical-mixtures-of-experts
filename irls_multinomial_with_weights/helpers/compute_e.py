@@ -22,12 +22,12 @@ def compute_e(Y: np.ndarray, p_prob: np.ndarray) -> np.ndarray:
         p_prob_i = p_prob[:, i]
         e_rows_i = y_i - p_prob_i
         e_rows[i] = e_rows_i
-        print(i, e_rows_i)
+        # print(i, e_rows_i)
 
     e_row = e_rows[0]
     for i in range(1, n - 1):
         e_row = np.concatenate((e_row, e_rows[i]), axis=0)
 
     e = np.reshape(e_row, (-1, 1))
-    print(e)
+    # print(e)
     return e
