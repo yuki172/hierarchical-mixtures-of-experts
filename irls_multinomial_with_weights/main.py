@@ -6,6 +6,12 @@ from helpers.compute_e import compute_e
 from helpers.compute_X_tilde import compute_X_tilde
 from helpers.compute_z import compute_z
 from scipy.linalg import sqrtm
+
+# import sys, os
+
+# print(os.path.abspath(os.path.join("utils")))
+# sys.path.append(os.path.abspath(os.path.join("utils")))
+
 from log_font_colors import printColored
 
 
@@ -17,7 +23,7 @@ def initialize_beta(n, p):
 def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
     """
     N: number of observations in the sample \n
-    p: number of input features
+    p: number of input features, including intercept
     n: number of classes in the multinomial distribution \n
     X: feature matrix, of shape (N, p), first column is 1 \n
     Y: output matrix, of shape (N, n - 1), y_n is omitted \n

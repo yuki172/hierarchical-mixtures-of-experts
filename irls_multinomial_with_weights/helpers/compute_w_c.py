@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Any
+
 from log_font_colors import log_font_colors
 
 
