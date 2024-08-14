@@ -12,8 +12,8 @@ def compute_e(Y: np.ndarray, p_prob: np.ndarray) -> np.ndarray:
     e: of shape (N * (n - 1), 1)
     """
 
-    N, _n = Y.shape
-    n = _n + 1
+    N, n_1 = Y.shape
+    n = n_1 + 1
 
     e_rows = [np.array(1) for _ in range(n - 1)]
 

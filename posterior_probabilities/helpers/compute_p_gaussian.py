@@ -3,7 +3,7 @@ from typing import Tuple
 from math import sqrt, pi
 
 
-def compute_p_ij_gaussian(
+def compute_p_gaussian(
     X: np.ndarray, Y: np.ndarray, beta: np.ndarray, sigma_sq: np.ndarray
 ):
     """

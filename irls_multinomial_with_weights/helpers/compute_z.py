@@ -18,8 +18,8 @@ def compute_z(
     z: target vector, of shape ((n - 1) * N, 1)
     """
 
-    N, _n = Y.shape
-    n = _n + 1
+    N, n_1 = Y.shape
+    n = n_1 + 1
 
     e = compute_e(Y, p_prob)
     W = compute_W_c(p_prob, np.ones((N, 1)))
