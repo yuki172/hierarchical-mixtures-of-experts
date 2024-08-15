@@ -15,6 +15,9 @@ def weighted_maximum_likelihood_gaussian(
     X: feature matrix, of shape (N, p), first column is 1 \n
     Y: output vector, of shape (N, 1) \n
     c: observation weights, of shape (N, 1)
+
+    beta: maximum likelihood estimates of the coefficients of x forming the mean, an array of length p \n
+    sigma_sq: maximum likelihood estimate of the variance of the normal distribution
     """
     beta, rss = get_beta_weighted_least_squares(X, Y, c)
     sigma_sq = rss / np.sum(c)
@@ -34,4 +37,4 @@ X1 = np.array([[1], [1], [1], [1]])
 c1 = np.array([[1], [1], [1], [1]])
 # get_beta_weighted_least_squares(X1, Y, c1)
 
-beta, sigma_sq = weighted_maximum_likelihood_gaussian(X1, Y, c)
+beta, sigma_sq = weighted_maximum_likelihood_gaussian(X, Y, c)

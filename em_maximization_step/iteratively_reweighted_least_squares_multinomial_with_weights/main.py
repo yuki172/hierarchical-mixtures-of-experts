@@ -20,9 +20,12 @@ def initialize_beta(n, p):
     return beta
 
 
+max_diff = 1 / 10000
+
+
 def iteratively_reweighted_least_squares_multinomial_with_weights(
     X: np.ndarray, Y: np.ndarray, c: np.ndarray
-):
+) -> np.ndarray:
     """
     N: number of observations in the sample \n
     p: number of input features, including intercept
@@ -30,6 +33,8 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     X: feature matrix, of shape (N, p), first column is 1 \n
     Y: output matrix, of shape (N, n - 1), y_n is omitted \n
     c: observation weights, of shape (N, 1)
+
+    beta_curr: estimated coefficients of x in the generalized linear model, of shape (n - 1, N)
     """
     N, p = X.shape
     N, n_1 = Y.shape
@@ -40,11 +45,10 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     # The i th row consists of the coefficients corresponding to the i th class
     beta_curr = initialize_beta(n, p)
 
-    printColored("beta_curr")
-    print(beta_curr)
-    count = 5
-    while count > 0:
-        count -= 1
+    iter_count = 0
+
+    while True:
+        iter_count += 1
         p_prob = compute_p_prob(X, beta_curr)
         W_c = compute_W_c(p_prob, c)
         z = compute_z(X_tilde, beta_curr, Y, p_prob)
@@ -54,10 +58,20 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
 
         beta_new = np.reshape(beta_new, (n - 1, p))
 
+        diff = np.sqrt(np.sum(np.square(np.subtract(beta_curr, beta_new))))
+
+        if iter_count % 5 == 0:
+            print("IRLS", f"iteration {iter_count}")
+            print(f"diff: {diff}")
+
         beta_curr = beta_new
+        if diff < max_diff:
+            break
 
         printColored("beta_new")
         print(beta_new)
+
+    return beta_curr
 
 
 # x = np.array([[1, 1], [1, 2], [1, 3]])
