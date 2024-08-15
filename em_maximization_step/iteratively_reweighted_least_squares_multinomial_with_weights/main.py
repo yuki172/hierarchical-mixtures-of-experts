@@ -20,7 +20,9 @@ def initialize_beta(n, p):
     return beta
 
 
-def irls_multinomial_with_weights(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
+def iteratively_reweighted_least_squares_multinomial_with_weights(
+    X: np.ndarray, Y: np.ndarray, c: np.ndarray
+):
     """
     N: number of observations in the sample \n
     p: number of input features, including intercept
@@ -76,4 +78,4 @@ X_tilde = compute_X_tilde(X, 3)
 beta_curr = np.array([[1, 2, 1], [4, 2, 2]])
 # compute_z(X_tilde, beta_curr, Y, p_prob)
 
-irls_multinomial_with_weights(X, Y, c)
+iteratively_reweighted_least_squares_multinomial_with_weights(X, Y, c)
