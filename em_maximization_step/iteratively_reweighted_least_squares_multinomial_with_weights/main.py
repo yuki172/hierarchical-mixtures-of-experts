@@ -45,6 +45,7 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     # The i th row consists of the coefficients corresponding to the i th class
     beta_curr = initialize_beta(n, p)
 
+    max_iter_count = 100
     iter_count = 0
 
     while True:
@@ -61,11 +62,16 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
         diff = np.sqrt(np.sum(np.square(np.subtract(beta_curr, beta_new))))
 
         if iter_count % 5 == 0:
-            print("IRLS", f"iteration {iter_count}")
+            print("IRLS multinomial loop", f"iteration {iter_count}")
             print(f"diff: {diff}")
 
         beta_curr = beta_new
-        if diff < max_diff:
+
+        if diff <= max_diff:
+            break
+
+        if iter_count == max_iter_count:
+            print("IRLS multinomial loop", "max_iter_count reached", "stopping")
             break
 
         printColored("beta_new")

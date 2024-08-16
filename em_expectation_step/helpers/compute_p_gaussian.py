@@ -20,7 +20,9 @@ def compute_p_gaussian(
     p_gaussian: values of the densities, of shape (n, m, N)
     """
 
-    Y = Y.T
+    # vector of length N
+    Y = (Y.T)[0]
+
     N, p = X.shape
     n, m, _ = beta.shape
 
