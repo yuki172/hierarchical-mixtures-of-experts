@@ -47,7 +47,7 @@ def compute_posterior_probabilities(
     p_top_gating_multinomial = compute_p_multinomial(X, beta=beta_top)
 
     # (n, m, N)
-    p_lower_gating_multinomial = np.zeros((m, m, N))
+    p_lower_gating_multinomial = np.zeros((n, m, N))
 
     for i in range(n):
         p_lower_i = compute_p_multinomial(X, beta=beta_lower[i])
@@ -57,3 +57,36 @@ def compute_posterior_probabilities(
         p_expert_gaussian, p_top_gating_multinomial, p_lower_gating_multinomial
     )
     return h_top, h_lower_cond_top, h_top_lower
+
+
+# N = 4, p = 2
+X = np.array([[1, 2], [1, 4], [1, 5], [1, 3]])
+Y = np.array([[3], [4], [2], [5]])
+
+# n = 3, m = 2
+
+# (n, m, p)
+beta_expert = np.array([[[1, 2], [2, 3]], [[2, 3], [4, 1]], [[3, 2], [2, 1]]])
+
+# (n, m)
+sigma_sq_expert = np.array([[1, 2], [3, 1], [3, 2]])
+
+
+# n = 3, p = 2
+beta_top = np.array([[1, 3], [2, 4]])
+
+# m = 2, p = 2
+beta_lower = np.array([[[1, 3]], [[2, 2]], [[3, 1]]])
+
+# h_top, h_lower_cond_top, h_top_lower = compute_posterior_probabilities(
+#     X, Y, beta_expert, sigma_sq_expert, beta_top, beta_lower
+# )
+
+# print("h_top")
+# print(h_top)
+
+# print("h_lower_cond_top")
+# print(h_lower_cond_top)
+
+# print("h_top_lower")
+# print(h_top_lower)

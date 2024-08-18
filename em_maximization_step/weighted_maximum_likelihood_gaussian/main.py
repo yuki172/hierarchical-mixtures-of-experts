@@ -1,5 +1,7 @@
 import numpy as np
-from helpers.get_beta_weighted_least_squares import get_beta_weighted_least_squares
+from weighted_maximum_likelihood_gaussian.helpers.get_beta_weighted_least_squares import (
+    get_beta_weighted_least_squares,
+)
 from typing import Tuple
 
 

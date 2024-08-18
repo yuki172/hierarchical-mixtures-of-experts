@@ -30,7 +30,7 @@ def get_beta_weighted_least_squares(X: np.ndarray, Y: np.ndarray, c: np.ndarray)
     # the value of rss
     rss = rss[0]
 
-    print(beta)
-    print(rss)
+    # print(beta)
+    # print(rss)
 
     return beta, rss

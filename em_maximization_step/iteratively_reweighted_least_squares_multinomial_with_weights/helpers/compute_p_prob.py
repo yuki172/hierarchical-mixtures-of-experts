@@ -1,5 +1,7 @@
 import numpy as np
-from helpers.compute_eta import compute_eta
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_eta import (
+    compute_eta,
+)
 
 
 def compute_p_prob(X, beta_curr) -> np.ndarray:
@@ -15,8 +17,8 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
 
     eta = compute_eta(X, beta_curr)
 
-    print("eta")
-    print(eta)
+    # print("eta")
+    # print(eta)
 
     N, n_1 = eta.shape
 
@@ -31,6 +33,6 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
     # (N, n)
     p_prob = np.matmul(np.diag(denominator), exp_eta)
 
-    print("p_prob")
-    print(p_prob)
+    # print("p_prob")
+    # print(p_prob)
     return p_prob

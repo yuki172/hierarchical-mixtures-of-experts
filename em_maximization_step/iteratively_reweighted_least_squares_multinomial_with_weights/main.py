@@ -1,10 +1,22 @@
 import numpy as np
-from helpers.compute_eta import compute_eta
-from helpers.compute_p_prob import compute_p_prob
-from helpers.compute_W_c import compute_W_c
-from helpers.compute_e import compute_e
-from helpers.compute_X_tilde import compute_X_tilde
-from helpers.compute_z import compute_z
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_eta import (
+    compute_eta,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_p_prob import (
+    compute_p_prob,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
+    compute_W_c,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_e import (
+    compute_e,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_X_tilde import (
+    compute_X_tilde,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_z import (
+    compute_z,
+)
 from scipy.linalg import sqrtm
 
 # import sys, os
@@ -12,7 +24,9 @@ from scipy.linalg import sqrtm
 # print(os.path.abspath(os.path.join("utils")))
 # sys.path.append(os.path.abspath(os.path.join("utils")))
 
-from log_font_colors import printColored
+from log_font_colors import (
+    printColored,
+)
 
 
 def initialize_beta(n, p):
@@ -48,6 +62,7 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     max_iter_count = 100
     iter_count = 0
 
+    printColored("IRLS start")
     while True:
         iter_count += 1
         p_prob = compute_p_prob(X, beta_curr)
@@ -74,9 +89,7 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
             print("IRLS multinomial loop", "max_iter_count reached", "stopping")
             break
 
-        printColored("beta_new")
-        print(beta_new)
-
+    printColored(f"IRLS end, diff: {diff}")
     return beta_curr
 
 
@@ -94,8 +107,8 @@ Y = np.array([[0.2, 0.3], [0.1, 0.5], [0.5, 0.2]])
 # compute_e(Y, p_prob)
 
 X = np.array([[1, 2, 3], [1, 4, 3], [1, 6, 7]])
-X_tilde = compute_X_tilde(X, 3)
+# X_tilde = compute_X_tilde(X, 3)
 beta_curr = np.array([[1, 2, 1], [4, 2, 2]])
 # compute_z(X_tilde, beta_curr, Y, p_prob)
 
-iteratively_reweighted_least_squares_multinomial_with_weights(X, Y, c)
+# iteratively_reweighted_least_squares_multinomial_with_weights(X, Y, c)

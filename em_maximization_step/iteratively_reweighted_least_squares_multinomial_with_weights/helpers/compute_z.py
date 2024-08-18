@@ -1,6 +1,10 @@
 import numpy as np
-from helpers.compute_e import compute_e
-from helpers.compute_W_c import compute_W_c
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_e import (
+    compute_e,
+)
+from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
+    compute_W_c,
+)
 
 
 def compute_z(
@@ -26,8 +30,8 @@ def compute_z(
 
     # print("e")
     # print(e)
-    print("W")
-    print(W)
+    # print("W")
+    # print(W)
 
     beta_curr_column = beta_curr.flatten()
     beta_curr_column = np.reshape(beta_curr_column, (-1, 1))
