@@ -26,19 +26,54 @@ def compute_p_gaussian(
     N, p = X.shape
     n, m, _ = beta.shape
 
-    p_gaussian = np.array([[[0] * N for _ in range(m)] for _ in range(n)])
-
+    p_gaussian = np.zeros((n, m, N))
+    arr = []
     for i in range(n):
         for j in range(m):
+            print("---", i, j, "----")
             beta_ij = beta[i][j]
             mu_ij = np.matmul(beta_ij, X.T)
             sigma_sq_ij = sigma_sq[i][j]
 
-            coef = 1 / (sqrt(2 * pi) * sigma_sq_ij)
+            print("beta_ij")
+            print(beta_ij)
+
+            print("mu_ij", mu_ij)
+            print("sigma_sq_ij", sigma_sq_ij)
+
+            coef = 1 / sqrt(2 * pi * sigma_sq_ij)
             exponent = -np.square(Y - mu_ij) / (2 * sigma_sq_ij)
+
+            print("coef", coef)
+            print("exponent", exponent)
 
             p_ij = coef * np.exp(exponent)
 
+            print("p_ij", p_ij)
             p_gaussian[i][j] = p_ij
+            # p_gaussian[i][j] = np.array([i, j, 3, 4])
+            arr.append(p_ij)
 
+    print("p_gaussian")
+    print(p_gaussian)
+
+    print("arr")
+    print(np.sum(arr))
     return p_gaussian
+
+
+# N = 4, p = 2
+X = np.array([[1, 2], [1, 4], [1, 5], [1, 3]])
+Y = np.array([[3], [4], [2], [5]])
+
+# n = 2, m = 3
+
+# (n, m, p)
+beta_expert = np.array([[[1, 2], [2, 3], [5, 2]], [[2, 3], [4, 1], [3, 4]]])
+
+# (n, m)
+sigma_sq_expert = np.array([[1, 2, 1], [3, 1, 2]])
+
+
+p_gaussian = compute_p_gaussian(X, Y, beta=beta_expert, sigma_sq=sigma_sq_expert)
+print(np.sum(p_gaussian))

@@ -40,12 +40,10 @@ def compute_maximum_likelihood_estimates(
     ### beta_expert, sigma_sq_expert ###
 
     # (n, m, p)
-    beta_expert = np.array(
-        [[[0 for _ in range(N)] for _ in range(m)] for _ in range(n)]
-    )
+    beta_expert = np.zeros((n, m, p))
 
     # (n, m)
-    sigma_sq_expert = np.array([[0 for _ in range(m)] for _ in range(n)])
+    sigma_sq_expert = np.zeros((n, m))
 
     for i in range(n):
         for j in range(m):
@@ -58,7 +56,7 @@ def compute_maximum_likelihood_estimates(
 
     ### beta_top ###
     top_gating_multinomial_outputs = h_top.T[:, :-1]
-    top_gating_observation_weights = np.array([1 for _ in range(N)]).reshape((N, 1))
+    top_gating_observation_weights = np.ones((N, 1))
 
     # (n - 1, p)
 
@@ -68,9 +66,8 @@ def compute_maximum_likelihood_estimates(
 
     ### beta_lower ###
 
-    beta_lower = np.array(
-        [[[0 for _ in range(p)] for _ in range(m - 1)] for _ in range(n)]
-    )
+    # (n, m - 1, p)
+    beta_lower = np.zeros((n, m - 1, p))
 
     for i in range(n):
         multinomial_outputs = h_lower_cond_top[i].T[:, :-1]

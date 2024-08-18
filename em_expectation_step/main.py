@@ -47,7 +47,7 @@ def compute_posterior_probabilities(
     p_top_gating_multinomial = compute_p_multinomial(X, beta=beta_top)
 
     # (n, m, N)
-    p_lower_gating_multinomial = np.array([[] for _ in range(n)])
+    p_lower_gating_multinomial = np.zeros((m, m, N))
 
     for i in range(n):
         p_lower_i = compute_p_multinomial(X, beta=beta_lower[i])
