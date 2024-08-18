@@ -1,120 +1,142 @@
 import numpy as np
 from em_expectation_step.main import compute_posterior_probabilities
 from em_maximization_step.main import compute_maximum_likelihood_estimates
+from helpers.initialize_parameters import initialize_parameters
+from helpers.compute_coeff_sq_diff import compute_coeff_sq_diff
+from em_expectation_step.helpers.compute_p_multinomial import compute_p_multinomial
 
 
-def initialize_parameters(p: int, n: int, m: int):
-    """
-    beta_expert: coefficients of x forming the mean of the normal distribution at the expert node, of shape (n, m, p) \n
-    sigma_sq_expert: variance of the normal distribution at the expert node, of shape (n, m) \n
+class HierarchicalMixturesOfExperts:
+    max_diff_default = 1 / 1000
 
-    beta_top: coefficients of the multinomial class probabilities (n classes) at the top gating node, of shape (n - 1, p) \n
-    beta_lower: coefficients of the multinomial class probabilities (m classes) at the lower gating nodes (n, m - 1, p) \n
-    """
-    # initialize all expert distributions to be normal with mean 0 and variance 1
-    beta_expert = np.zeros((n, m, p))
-    sigma_sq_expert = np.ones((n, m))
-
-    # initialize the top gating node to be multinomial with equal class probabilities
-    beta_top = np.zeros((n - 1, p))
-
-    # initialize the lower gating nodes to be multinomial with equal class probabilities
-    beta_lower = np.zeros((n, m - 1, p))
-
-    return beta_expert, sigma_sq_expert, beta_top, beta_lower
-
-
-max_diff = 1 / 1000
-
-
-def compute_coeff_sq_diff(
-    beta_expert_curr,
-    beta_expert_new,
-    sigma_sq_expert_curr,
-    sigma_sq_expert_new,
-    beta_top_curr,
-    beta_top_new,
-    beta_lower_curr,
-    beta_lower_new,
-):
-    sq_diff = 0
-    for coeff_curr, coeff_new in [
-        [beta_expert_curr, beta_expert_new],
-        [sigma_sq_expert_curr, sigma_sq_expert_new],
-        [beta_top_curr, beta_top_new],
-        [beta_lower_curr, beta_lower_new],
-    ]:
-        sq_diff += np.sum(np.square(np.subtract(coeff_curr, coeff_new)))
-
-    return sq_diff
-
-
-def hierarchical_mixture_of_experts(X: np.ndarray, Y: np.ndarray, n: int, m: int):
-    """
-    N: number of observations in the sample \n
-    p: number of input features, including intercept
-
-    n: number of classes in the multinomial distribution at the top gating node \n
-    m: number of classes in the multinomial distribution at the lower gating nodes \n
-
-    X: feature matrix, of shape (N, p), first column is 1 \n
-    Y: output vector, of shape (N, 1)
-    """
-
-    N, p = X.shape
-
-    beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
-        initialize_parameters(p, n, m)
-    )
-
-    max_iter_count = 100
-    iter_count = 0
-
-    while True:
-        iter_count += 1
-
-        # EM algorithm - expectation step
-        h_top, h_lower_cond_top, h_top_lower = compute_posterior_probabilities(
-            X,
-            Y,
-            beta_expert=beta_expert_curr,
-            sigma_sq_expert=sigma_sq_expert_curr,
-            beta_top=beta_top_curr,
-            beta_lower=beta_lower_curr,
+    def __init__(self, n: int, m: int, max_diff: float = max_diff_default):
+        """
+        n: number of classes at the top gating network \n
+        m: number of classes at each lower gating network \n
+        max_diff: if sum of squared differences between the new and current coefficients in an iteration is less than or equal to this value, the iterations end.
+        """
+        self.n = n
+        self.m = m
+        self.max_diff = max_diff
+        self.beta_expert, self.sigma_sq_expert, self.beta_top, self.beta_lower = (
+            np.array([0]),
+            np.array([1]),
+            np.array([0]),
+            np.array([0]),
         )
 
-        # EM algorithm - maximization step
-        beta_expert_new, sigma_sq_expert_new, beta_top_new, beta_lower_new = (
-            compute_maximum_likelihood_estimates(
-                X, Y, h_top, h_lower_cond_top, h_top_lower
-            )
-        )
+    def fit(self, X: np.ndarray, Y: np.ndarray):
+        """
+        N: number of observations in the sample \n
+        p: number of input features, including intercept \n
 
-        coeff_sq_diff = compute_coeff_sq_diff(
-            beta_expert_curr,
-            beta_expert_new,
-            sigma_sq_expert_curr,
-            sigma_sq_expert_new,
-            beta_top_curr,
-            beta_top_new,
-            beta_lower_curr,
-            beta_lower_new,
-        )
+        X: feature matrix, of shape (N, p - 1)\n
+        Y: output vector, of shape (N, 1)
+        """
 
-        if iter_count % 10 == 0:
-            print("HME main loop", f"iteration count {iter_count}")
-            print("sq_diff", coeff_sq_diff)
+        N, p_1 = X
+
+        # append a column of 1 to account for the intercept
+        X = np.concatenate((np.ones((N, 1)), X), axis=1)
+
+        p = X.shape[1]
+
+        n, m, max_diff = self.n, self.m, self.max_diff
 
         beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
-            beta_expert_new,
-            sigma_sq_expert_new,
-            beta_top_new,
-            beta_lower_new,
+            initialize_parameters(p, n, m)
         )
 
-        if coeff_sq_diff <= max_diff:
-            break
+        max_iter_count = 100
+        iter_count = 0
 
-        if iter_count == max_iter_count:
-            print("HME main loop", "max_iter_count reached", "stopping")
-            break
+        while True:
+            iter_count += 1
+
+            # EM algorithm - expectation step
+            h_top, h_lower_cond_top, h_top_lower = compute_posterior_probabilities(
+                X,
+                Y,
+                beta_expert=beta_expert_curr,
+                sigma_sq_expert=sigma_sq_expert_curr,
+                beta_top=beta_top_curr,
+                beta_lower=beta_lower_curr,
+            )
+
+            # EM algorithm - maximization step
+            beta_expert_new, sigma_sq_expert_new, beta_top_new, beta_lower_new = (
+                compute_maximum_likelihood_estimates(
+                    X, Y, h_top, h_lower_cond_top, h_top_lower
+                )
+            )
+
+            coeff_sq_diff = compute_coeff_sq_diff(
+                beta_expert_curr,
+                beta_expert_new,
+                sigma_sq_expert_curr,
+                sigma_sq_expert_new,
+                beta_top_curr,
+                beta_top_new,
+                beta_lower_curr,
+                beta_lower_new,
+            )
+
+            if iter_count % 10 == 0:
+                print("HME main loop", f"iteration count {iter_count}")
+                print("sq_diff", coeff_sq_diff)
+
+            beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
+                beta_expert_new,
+                sigma_sq_expert_new,
+                beta_top_new,
+                beta_lower_new,
+            )
+
+            if coeff_sq_diff <= max_diff:
+                break
+
+            if iter_count == max_iter_count:
+                print("HME main loop", "max_iter_count reached", "stopping")
+                break
+
+        self.beta_expert, self.sigma_sq_expert, self.beta_top, self.beta_lower = (
+            beta_expert_curr,
+            sigma_sq_expert_curr,
+            beta_top_curr,
+            beta_lower_curr,
+        )
+
+    def predict(self, x: np.ndarray):
+        """
+        x: input vector, of length p - 1 \n
+
+        returns y_hat: predicted value
+        """
+
+        n, m = self.n, self.m
+
+        # append 1 to account for the intercept
+        x = np.concatenate(([1], x))
+        p = x.shape[0]
+
+        X = x.reshape((1, p))
+
+        # vector of length n
+        p_top = compute_p_multinomial(X, beta=self.beta_top).reshape((-1,))
+
+        # (n, m)
+        p_lower = np.array([[0 for _ in range(m)] for _ in range(n)])
+
+        for i in range(n):
+            p_lower[i] = compute_p_multinomial(X, beta=self.beta_lower[i]).reshape(
+                (-1,)
+            )
+
+        # (n, m)
+        mean_expert = np.sum(np.multiply(self.beta_expert, x), axis=2)
+
+        y_hat = np.sum(
+            np.multiply(p_top, np.sum(np.multiply(p_lower, mean_expert), axis=1))
+        )
+
+        return y_hat
