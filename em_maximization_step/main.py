@@ -1,8 +1,8 @@
 import numpy as np
-from weighted_maximum_likelihood_gaussian.main import (
+from em_maximization_step.weighted_maximum_likelihood_gaussian.main import (
     weighted_maximum_likelihood_gaussian,
 )
-from iteratively_reweighted_least_squares_multinomial_with_weights.main import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.main import (
     iteratively_reweighted_least_squares_multinomial_with_weights,
 )
 
@@ -36,7 +36,7 @@ def compute_maximum_likelihood_estimates(
     beta_lower: coefficients of the multinomial class probabilities (m classes) at the lower gating nodes (n, m - 1, p) \n
     """
 
-    printColored("em - maximization step")
+    # printColored("em - maximization step")
 
     n, m, N = h_lower_cond_top.shape
     _, p = X.shape
@@ -58,29 +58,29 @@ def compute_maximum_likelihood_estimates(
             beta_expert[i][j] = beta_expert_ij
             sigma_sq_expert[i][j] = sigma_sq_expert_ij
 
-    printColored("beta_expert")
-    print(beta_expert)
+    # printColored("beta_expert")
+    # print(beta_expert)
 
-    printColored("sigma_sq_expert")
-    print(sigma_sq_expert)
+    # printColored("sigma_sq_expert")
+    # print(sigma_sq_expert)
 
     ### beta_top ###
     top_gating_multinomial_outputs = h_top.T[:, :-1]
     top_gating_observation_weights = np.ones((N, 1))
 
-    printColored("top_gating_multinomial_outputs")
-    print(top_gating_multinomial_outputs)
+    # printColored("top_gating_multinomial_outputs")
+    # print(top_gating_multinomial_outputs)
 
-    printColored("top_gating_observation_weights")
-    print(top_gating_observation_weights)
+    # printColored("top_gating_observation_weights")
+    # print(top_gating_observation_weights)
 
     # (n - 1, p)
     beta_top = iteratively_reweighted_least_squares_multinomial_with_weights(
         X, Y=top_gating_multinomial_outputs, c=top_gating_observation_weights
     )
 
-    printColored("beta_top")
-    print(beta_top)
+    # printColored("beta_top")
+    # print(beta_top)
 
     ### beta_lower ###
 
@@ -88,25 +88,25 @@ def compute_maximum_likelihood_estimates(
     beta_lower = np.zeros((n, m - 1, p))
 
     for i in range(n):
-        printColored(f"---- {i} -----")
+        # printColored(f"---- {i} -----")
         multinomial_outputs = h_lower_cond_top[i].T[:, :-1]
         observation_weights = h_top[i]
 
-        printColored("mulinomial_outputs")
-        print(multinomial_outputs)
+        # printColored("mulinomial_outputs")
+        # print(multinomial_outputs)
 
-        printColored("observation_weights")
-        print(observation_weights)
+        # printColored("observation_weights")
+        # print(observation_weights)
 
         beta_lower[i] = iteratively_reweighted_least_squares_multinomial_with_weights(
             X, Y=multinomial_outputs, c=observation_weights
         )
 
-        printColored(f"beta_lower[i], {i}")
-        print(beta_lower[i])
+        # printColored(f"beta_lower[i], {i}")
+        # print(beta_lower[i])
 
-    printColored("beta_lower")
-    print(beta_lower)
+    # printColored("beta_lower")
+    # print(beta_lower)
 
     return beta_expert, sigma_sq_expert, beta_top, beta_lower
 

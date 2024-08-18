@@ -4,6 +4,7 @@ from em_maximization_step.main import compute_maximum_likelihood_estimates
 from helpers.initialize_parameters import initialize_parameters
 from helpers.compute_coeff_sq_diff import compute_coeff_sq_diff
 from em_expectation_step.helpers.compute_p_multinomial import compute_p_multinomial
+from log_font_colors import printColored
 
 
 class HierarchicalMixturesOfExperts:
@@ -34,7 +35,7 @@ class HierarchicalMixturesOfExperts:
         Y: output vector, of shape (N, 1)
         """
 
-        N, p_1 = X
+        N, p_1 = X.shape
 
         # append a column of 1 to account for the intercept
         X = np.concatenate((np.ones((N, 1)), X), axis=1)
@@ -43,12 +44,31 @@ class HierarchicalMixturesOfExperts:
 
         n, m, max_diff = self.n, self.m, self.max_diff
 
+        printColored("X")
+        print(X)
+
+        printColored(f"n {n}, m {m}, N {N}, p {p}")
+
         beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
             initialize_parameters(p, n, m)
         )
 
+        printColored("initial beta_expert_curr")
+        print(beta_expert_curr)
+
+        printColored("initial sigma_sq_expert_curr")
+        print(sigma_sq_expert_curr)
+
+        printColored("initial beta_top_curr")
+        print(beta_top_curr)
+
+        printColored("initial beta_lower_curr")
+        print(beta_lower_curr)
+
         max_iter_count = 100
         iter_count = 0
+
+        printColored("HME main loop starts")
 
         while True:
             iter_count += 1
@@ -82,7 +102,7 @@ class HierarchicalMixturesOfExperts:
             )
 
             if iter_count % 10 == 0:
-                print("HME main loop", f"iteration count {iter_count}")
+                printColored(f"HME main loop, iteration count {iter_count}")
                 print("sq_diff", coeff_sq_diff)
 
             beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
@@ -99,12 +119,26 @@ class HierarchicalMixturesOfExperts:
                 print("HME main loop", "max_iter_count reached", "stopping")
                 break
 
+        printColored(f"HME main loop ends, diff {coeff_sq_diff}")
+
         self.beta_expert, self.sigma_sq_expert, self.beta_top, self.beta_lower = (
             beta_expert_curr,
             sigma_sq_expert_curr,
             beta_top_curr,
             beta_lower_curr,
         )
+
+        printColored("final beta_expert_curr")
+        print(beta_expert_curr)
+
+        printColored("final sigma_sq_expert_curr")
+        print(sigma_sq_expert_curr)
+
+        printColored("final beta_top_curr")
+        print(beta_top_curr)
+
+        printColored("final beta_lower_curr")
+        print(beta_lower_curr)
 
     def predict(self, x: np.ndarray):
         """
@@ -121,11 +155,14 @@ class HierarchicalMixturesOfExperts:
 
         X = x.reshape((1, p))
 
+        printColored("x")
+        print(x)
+
         # vector of length n
         p_top = compute_p_multinomial(X, beta=self.beta_top).reshape((-1,))
 
         # (n, m)
-        p_lower = np.array([[0 for _ in range(m)] for _ in range(n)])
+        p_lower = np.zeros((n, m))
 
         for i in range(n):
             p_lower[i] = compute_p_multinomial(X, beta=self.beta_lower[i]).reshape(
@@ -138,5 +175,8 @@ class HierarchicalMixturesOfExperts:
         y_hat = np.sum(
             np.multiply(p_top, np.sum(np.multiply(p_lower, mean_expert), axis=1))
         )
+
+        printColored("y_hat")
+        print(y_hat)
 
         return y_hat

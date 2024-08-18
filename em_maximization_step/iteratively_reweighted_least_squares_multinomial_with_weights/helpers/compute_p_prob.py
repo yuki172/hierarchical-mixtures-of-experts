@@ -1,7 +1,14 @@
 import numpy as np
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_eta import (
-    compute_eta,
-)
+
+
+def compute_eta(X, beta_curr) -> np.ndarray:
+    """
+    X: feature matrix, of shape (N, p), first column is 1 \n
+    beta_curr: coefficients, of shape (n - 1, p)\n
+
+    eta: of shape (N, n - 1)
+    """
+    return np.matmul(X, beta_curr.T)
 
 
 def compute_p_prob(X, beta_curr) -> np.ndarray:

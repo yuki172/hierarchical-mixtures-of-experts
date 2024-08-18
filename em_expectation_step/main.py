@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Tuple
 from math import sqrt, pi
-from helpers.compute_p_gaussian import compute_p_gaussian
-from helpers.compute_p_multinomial import compute_p_multinomial
-from helpers.compute_h import compute_h
+from em_expectation_step.helpers.compute_p_gaussian import compute_p_gaussian
+from em_expectation_step.helpers.compute_p_multinomial import compute_p_multinomial
+from em_expectation_step.helpers.compute_h import compute_h
 
 
 def compute_posterior_probabilities(

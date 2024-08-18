@@ -1,20 +1,14 @@
 import numpy as np
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_eta import (
-    compute_eta,
-)
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_p_prob import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_p_prob import (
     compute_p_prob,
 )
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
     compute_W_c,
 )
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_e import (
-    compute_e,
-)
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_X_tilde import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_X_tilde import (
     compute_X_tilde,
 )
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_z import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_z import (
     compute_z,
 )
 from scipy.linalg import sqrtm
@@ -62,7 +56,7 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     max_iter_count = 100
     iter_count = 0
 
-    printColored("IRLS start")
+    # printColored("IRLS start")
     while True:
         iter_count += 1
         p_prob = compute_p_prob(X, beta_curr)
@@ -76,9 +70,9 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
 
         diff = np.sqrt(np.sum(np.square(np.subtract(beta_curr, beta_new))))
 
-        if iter_count % 5 == 0:
-            print("IRLS multinomial loop", f"iteration {iter_count}")
-            print(f"diff: {diff}")
+        # if iter_count % 5 == 0:
+        #     print("IRLS multinomial loop", f"iteration {iter_count}")
+        #     print(f"diff: {diff}")
 
         beta_curr = beta_new
 
@@ -86,10 +80,10 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
             break
 
         if iter_count == max_iter_count:
-            print("IRLS multinomial loop", "max_iter_count reached", "stopping")
+            # print("IRLS multinomial loop", "max_iter_count reached", "stopping")
             break
 
-    printColored(f"IRLS end, diff: {diff}")
+    # printColored(f"IRLS end, diff: {diff}")
     return beta_curr
 
 

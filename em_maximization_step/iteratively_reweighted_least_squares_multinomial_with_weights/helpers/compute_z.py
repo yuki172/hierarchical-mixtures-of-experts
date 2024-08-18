@@ -1,8 +1,8 @@
 import numpy as np
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_e import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_e import (
     compute_e,
 )
-from iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
+from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_W_c import (
     compute_W_c,
 )
 
