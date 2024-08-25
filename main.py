@@ -32,10 +32,12 @@ class HierarchicalMixturesOfExperts:
         p: number of input features, including intercept \n
 
         X: feature matrix, of shape (N, p - 1)\n
-        Y: output vector, of shape (N, 1)
+        Y: output vector, of length N
         """
 
         N, p_1 = X.shape
+
+        Y = Y.reshape((N, 1))
 
         # append a column of 1 to account for the intercept
         X = np.concatenate((np.ones((N, 1)), X), axis=1)
@@ -140,41 +142,47 @@ class HierarchicalMixturesOfExperts:
         printColored("final beta_lower_curr")
         print(beta_lower_curr)
 
-    def predict(self, x: np.ndarray):
+    def predict(self, X: np.ndarray):
         """
-        x: input vector, of length p - 1 \n
+        N: number of observations
 
-        returns y_hat: predicted value
+        X: input matrix, of shape (N, p - 1) \n
+
+        returns y_hat: predicted value, a vector of length N
         """
 
+        N = X.shape[0]
         n, m = self.n, self.m
 
         # append 1 to account for the intercept
-        x = np.concatenate(([1], x))
-        p = x.shape[0]
+        X = np.concatenate((np.ones((N, 1)), X), axis=1)
+        p = X.shape[1]
 
-        X = x.reshape((1, p))
+        printColored("X")
+        print(X)
 
-        printColored("x")
-        print(x)
+        # (n, N)
+        p_top = compute_p_multinomial(X, beta=self.beta_top)
 
-        # vector of length n
-        p_top = compute_p_multinomial(X, beta=self.beta_top).reshape((-1,))
-
-        # (n, m)
-        p_lower = np.zeros((n, m))
+        # (n, m, N)
+        p_lower = np.zeros((n, m, N))
 
         for i in range(n):
-            p_lower[i] = compute_p_multinomial(X, beta=self.beta_lower[i]).reshape(
-                (-1,)
-            )
+            p_lower[i] = compute_p_multinomial(X, beta=self.beta_lower[i])
 
-        # (n, m)
-        mean_expert = np.sum(np.multiply(self.beta_expert, x), axis=2)
+        # (n, m, N)
+        mean_expert = np.zeros((n, m, N))
 
-        y_hat = np.sum(
-            np.multiply(p_top, np.sum(np.multiply(p_lower, mean_expert), axis=1))
-        )
+        for i in range(n):
+            for j in range(m):
+                mean_expert[i][j] = np.matmul(self.beta_expert[i][j], X.T)
+
+        # (n, N)
+        means_1 = np.sum(np.multiply(mean_expert, p_lower), axis=1)
+
+        means_2 = np.multiply(p_top, means_1)
+
+        y_hat = np.sum(means_2, axis=0)
 
         printColored("y_hat")
         print(y_hat)
