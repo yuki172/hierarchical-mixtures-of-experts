@@ -10,4 +10,4 @@ The implementation is an application of the EM algorithm to the HME architecture
 
 ## 2. Paper on HME
 
-This discusses the probability model of HME and presents details on the application of the EM algorithm to the HME and how IRLS is used to solve to the maximization step of the EM algorithm.
+The paper presents the probability model of HME and discusses details on the application of the EM algorithm to the HME and how IRLS is used to solve to the maximization step of the EM algorithm.
