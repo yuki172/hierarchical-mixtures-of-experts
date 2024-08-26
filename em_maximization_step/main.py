@@ -97,7 +97,7 @@ def compute_maximum_likelihood_estimates(
 
         # printColored("observation_weights")
         # print(observation_weights)
-
+        print("lower ", i)
         beta_lower[i] = iteratively_reweighted_least_squares_multinomial_with_weights(
             X, Y=multinomial_outputs, c=observation_weights
         )

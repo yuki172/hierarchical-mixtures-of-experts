@@ -1,5 +1,9 @@
 import numpy as np
 from main import HierarchicalMixturesOfExperts
+import seaborn as sns
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 
 def compute_rss(y1: np.ndarray, y2: np.ndarray):
@@ -16,6 +20,48 @@ def compute_r_sq(y1: np.ndarray, y2: np.ndarray):
     tss = np.sum(np.square(np.subtract(y1, mean)))
 
     return 1 - rss / tss
+
+
+def example3():
+    data = sns.load_dataset("tips")
+    data = pd.get_dummies(data, drop_first=True)
+
+    for col in [
+        "sex_Female",
+        "smoker_No",
+        "day_Fri",
+        "day_Sat",
+        "day_Sun",
+        "time_Dinner",
+    ]:
+        data[col] = data[col].astype(int)
+
+    X_df = data.drop("tip", axis=1)
+    y_df = data["tip"]
+
+    X = X_df.to_numpy()
+    y = y_df.to_numpy()
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.33, random_state=42
+    )
+
+    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+    linear_model = LinearRegression()
+    linear_model.fit(X_train, y_train)
+
+    y_pred_linear_model = linear_model.predict(X_test)
+
+    print("linear regression R^2")
+    print(compute_r_sq(y_test, y_pred_linear_model))
+
+    hme_model = HierarchicalMixturesOfExperts(n=2, m=3)
+    hme_model.fit(X=X_train, Y=y_train)
+
+    y_pred_hme = hme_model.predict(X_test)
+    print("HME R^2")
+    print(compute_r_sq(y_test, y_pred_hme))
 
 
 def example1():
@@ -65,3 +111,4 @@ def example2():
 
 # example1()
 example2()
+# example3()
