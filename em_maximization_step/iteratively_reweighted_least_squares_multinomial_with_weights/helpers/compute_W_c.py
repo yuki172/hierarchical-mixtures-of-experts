@@ -18,7 +18,6 @@ def compute_W_c(p_prob: np.ndarray, c: np.ndarray) -> np.ndarray:
     w_c_dict: list[list[np.ndarray]] = [
         [np.array(1) for _ in range(n - 1)] for _ in range(n - 1)
     ]
-
     c = c.flatten()
     for i in range(len(w_c_dict)):
         w_c_i = None

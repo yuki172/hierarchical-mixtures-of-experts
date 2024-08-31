@@ -14,9 +14,9 @@ def initialize_parameters(p: int, n: int, m: int):
     sigma_sq_expert = np.ones((n, m))
 
     # the mean will be different for distinct experts
-    beta_expert = np.zeros((n, m, p))
+    # beta_expert = np.zeros((n, m, p))
     # beta_expert = np.random.randint(1, 10, size=(n, m, p))
-    # beta_expert = np.random.rand(n, m, p)
+    beta_expert = np.random.rand(n, m, p)
     # for i in range(n):
     #     for j in range(m):
     #         beta_expert[i][j][0] = (i + j) % 2 + random()

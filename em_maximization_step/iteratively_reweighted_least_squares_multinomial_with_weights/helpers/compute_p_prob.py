@@ -28,12 +28,13 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
     # print(eta)
 
     N, n_1 = eta.shape
+    n = n_1 + 1
 
     # (N, n)
     exp_eta = np.concatenate((np.exp(eta), np.ones((N, 1))), axis=1)
 
     # (N, 1)
-    denominator = np.reciprocal(np.matmul(exp_eta, np.ones((n_1 + 1, 1))))
+    denominator = np.reciprocal(np.matmul(exp_eta, np.ones((n, 1))))
 
     denominator = denominator.flatten()
 
@@ -42,4 +43,5 @@ def compute_p_prob(X, beta_curr) -> np.ndarray:
 
     # print("p_prob")
     # print(p_prob)
+
     return p_prob

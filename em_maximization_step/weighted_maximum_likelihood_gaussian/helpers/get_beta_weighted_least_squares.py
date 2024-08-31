@@ -1,5 +1,15 @@
 import numpy as np
-from scipy.linalg import sqrtm
+
+# from scipy.linalg import sqrtm
+
+
+def sqrt_sd(A):
+    A = np.asarray(A)
+    if len(A.shape) != 2:
+        raise ValueError("Non-matrix input to matrix function.")
+    w, v = np.linalg.eig(A)
+    w = np.sqrt(np.maximum(w, 0))
+    return (v * w).dot(v.conj().T)
 
 
 def get_beta_weighted_least_squares(X: np.ndarray, Y: np.ndarray, c: np.ndarray):
@@ -19,11 +29,13 @@ def get_beta_weighted_least_squares(X: np.ndarray, Y: np.ndarray, c: np.ndarray)
     N, p = X.shape
     c = c.flatten()
     W = np.diag(c)
-    K: np.ndarray = sqrtm(W)  # type: ignore
+    K: np.ndarray = sqrt_sd(W)  # type: ignore
+    K = np.real(K)
 
     # beta is of shape (p, 1), rss is an array of length 1
     beta, rss = np.linalg.lstsq(np.matmul(K, X), np.matmul(K, Y))[:2]
 
+    print("rss", rss)
     # array of length p
     beta = beta.reshape(p)
 

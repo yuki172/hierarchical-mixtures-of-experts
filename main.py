@@ -46,82 +46,90 @@ class HierarchicalMixturesOfExperts:
 
         n, m, max_diff = self.n, self.m, self.max_diff
 
-        printColored("X")
-        print(X)
+        # printColored("X")
+        # print(X)
 
-        printColored(f"n {n}, m {m}, N {N}, p {p}")
+        # printColored(f"n {n}, m {m}, N {N}, p {p}")
 
         beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
             initialize_parameters(p, n, m)
         )
 
-        printColored("initial beta_expert_curr")
-        print(beta_expert_curr)
+        # printColored("initial beta_expert_curr")
+        # print(beta_expert_curr)
 
-        printColored("initial sigma_sq_expert_curr")
-        print(sigma_sq_expert_curr)
+        # printColored("initial sigma_sq_expert_curr")
+        # print(sigma_sq_expert_curr)
 
-        printColored("initial beta_top_curr")
-        print(beta_top_curr)
+        # printColored("initial beta_top_curr")
+        # print(beta_top_curr)
 
-        printColored("initial beta_lower_curr")
-        print(beta_lower_curr)
+        # printColored("initial beta_lower_curr")
+        # print(beta_lower_curr)
 
         max_iter_count = 100
         iter_count = 0
 
         printColored("HME main loop starts")
 
-        while True:
-            iter_count += 1
+        try:
+            while True:
+                iter_count += 1
 
-            # EM algorithm - expectation step
-            h_top, h_lower_cond_top, h_top_lower = compute_posterior_probabilities(
-                X,
-                Y,
-                beta_expert=beta_expert_curr,
-                sigma_sq_expert=sigma_sq_expert_curr,
-                beta_top=beta_top_curr,
-                beta_lower=beta_lower_curr,
-            )
-
-            # EM algorithm - maximization step
-            beta_expert_new, sigma_sq_expert_new, beta_top_new, beta_lower_new = (
-                compute_maximum_likelihood_estimates(
-                    X, Y, h_top, h_lower_cond_top, h_top_lower
+                # EM algorithm - expectation step
+                h_top, h_lower_cond_top, h_top_lower = compute_posterior_probabilities(
+                    X,
+                    Y,
+                    beta_expert=beta_expert_curr,
+                    sigma_sq_expert=sigma_sq_expert_curr,
+                    beta_top=beta_top_curr,
+                    beta_lower=beta_lower_curr,
                 )
-            )
 
-            coeff_sq_diff = compute_coeff_sq_diff(
-                beta_expert_curr,
-                beta_expert_new,
-                sigma_sq_expert_curr,
-                sigma_sq_expert_new,
-                beta_top_curr,
-                beta_top_new,
-                beta_lower_curr,
-                beta_lower_new,
-            )
+                # EM algorithm - maximization step
+                beta_expert_new, sigma_sq_expert_new, beta_top_new, beta_lower_new = (
+                    compute_maximum_likelihood_estimates(
+                        X, Y, h_top, h_lower_cond_top, h_top_lower
+                    )
+                )
 
-            if iter_count % 10 == 0:
-                printColored(f"HME main loop, iteration count {iter_count}")
-                print("sq_diff", coeff_sq_diff)
+                coeff_sq_diff = compute_coeff_sq_diff(
+                    beta_expert_curr,
+                    beta_expert_new,
+                    sigma_sq_expert_curr,
+                    sigma_sq_expert_new,
+                    beta_top_curr,
+                    beta_top_new,
+                    beta_lower_curr,
+                    beta_lower_new,
+                )
 
-            beta_expert_curr, sigma_sq_expert_curr, beta_top_curr, beta_lower_curr = (
-                beta_expert_new,
-                sigma_sq_expert_new,
-                beta_top_new,
-                beta_lower_new,
-            )
+                # if iter_count % 10 == 0:
+                #     printColored(f"HME main loop, iteration count {iter_count}")
+                #     print("sq_diff", coeff_sq_diff)
 
-            if coeff_sq_diff <= max_diff:
-                break
+                (
+                    beta_expert_curr,
+                    sigma_sq_expert_curr,
+                    beta_top_curr,
+                    beta_lower_curr,
+                ) = (
+                    beta_expert_new,
+                    sigma_sq_expert_new,
+                    beta_top_new,
+                    beta_lower_new,
+                )
 
-            if iter_count == max_iter_count:
-                print("HME main loop", "max_iter_count reached", "stopping")
-                break
+                if coeff_sq_diff <= max_diff:
+                    break
 
-        printColored(f"HME main loop ends, diff {coeff_sq_diff}")
+                if iter_count == max_iter_count:
+                    print("HME main loop", "max_iter_count reached", "stopping")
+                    break
+        except:
+            print("error")
+
+        # printColored(f"HME main loop ends, diff {coeff_sq_diff}")
 
         self.beta_expert, self.sigma_sq_expert, self.beta_top, self.beta_lower = (
             beta_expert_curr,
@@ -130,17 +138,17 @@ class HierarchicalMixturesOfExperts:
             beta_lower_curr,
         )
 
-        printColored("final beta_expert_curr")
-        print(beta_expert_curr)
+        # printColored("final beta_expert_curr")
+        # print(beta_expert_curr)
 
-        printColored("final sigma_sq_expert_curr")
-        print(sigma_sq_expert_curr)
+        # printColored("final sigma_sq_expert_curr")
+        # print(sigma_sq_expert_curr)
 
-        printColored("final beta_top_curr")
-        print(beta_top_curr)
+        # printColored("final beta_top_curr")
+        # print(beta_top_curr)
 
-        printColored("final beta_lower_curr")
-        print(beta_lower_curr)
+        # printColored("final beta_lower_curr")
+        # print(beta_lower_curr)
 
     def predict(self, X: np.ndarray):
         """

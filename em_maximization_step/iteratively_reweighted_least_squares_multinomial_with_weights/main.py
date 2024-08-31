@@ -11,7 +11,8 @@ from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_
 from em_maximization_step.iteratively_reweighted_least_squares_multinomial_with_weights.helpers.compute_z import (
     compute_z,
 )
-from scipy.linalg import sqrtm
+
+# from scipy.linalg import sqrtm
 
 # import sys, os
 
@@ -29,6 +30,15 @@ def initialize_beta(n, p):
 
 
 max_diff = 1 / 10000
+
+
+def sqrt_sd(A):
+    A = np.asarray(A)
+    if len(A.shape) != 2:
+        raise ValueError("Non-matrix input to matrix function.")
+    w, v = np.linalg.eig(A)
+    w = np.sqrt(np.maximum(w, 0))
+    return (v * w).dot(v.conj().T)
 
 
 def iteratively_reweighted_least_squares_multinomial_with_weights(
@@ -56,13 +66,20 @@ def iteratively_reweighted_least_squares_multinomial_with_weights(
     max_iter_count = 100
     iter_count = 0
 
+    # print(n)
+
     # printColored("IRLS start")
     while True:
         iter_count += 1
         p_prob = compute_p_prob(X, beta_curr)
         W_c = compute_W_c(p_prob, c)
+
+        # print("W_c")
+        # print(W_c)
         z = compute_z(X_tilde, beta_curr, Y, p_prob)
-        K_c: np.ndarray = sqrtm(W_c)  # type: ignore
+        K_c: np.ndarray = np.real(sqrt_sd(W_c))  # type: ignore
+
+        K_c = np.real(K_c)
 
         beta_new = np.linalg.lstsq(np.matmul(K_c, X_tilde), np.matmul(K_c, z))[0]
 
