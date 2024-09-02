@@ -11,22 +11,7 @@ import math
 from main import HierarchicalMixturesOfExperts
 import sklearn
 import time
-
-
-def compute_rss(y1: np.ndarray, y2: np.ndarray):
-
-    return np.sum(np.square(np.subtract(y1, y2)))
-
-
-def compute_r_sq(y1: np.ndarray, y2: np.ndarray):
-    N = y1.shape[0]
-    rss = compute_rss(y1, y2)
-
-    mean = y1.mean()
-
-    tss = np.sum(np.square(np.subtract(y1, mean)))
-
-    return 1 - rss / tss
+from helpers.compute_r_sq import compute_r_sq
 
 
 def test_irls_multinomial(N: int):
@@ -154,7 +139,7 @@ def test_simulated_mixed_normals(N: int):
         print("R^2", r2)
         print("fit time", time_diff_fit)
         print("predict time", time_diff_predict)
-        print("\n")
+        print("\n\n")
 
 
 # N_irls = 100
